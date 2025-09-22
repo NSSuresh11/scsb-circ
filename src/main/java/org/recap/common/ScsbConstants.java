@@ -476,5 +476,6 @@ public final class ScsbConstants {
     public static final String NCIP_REQUEST_ID_PREFIX = "SCSB-";
     public static final String INVALID_PATRON_CODE = "Invalid Patron Barcode";
     public static final Integer PATRON_CODE_MAX_LENGTH = 45;
+    public static final String UNIQUE_BARCODE = "Barcode must be unique";
 
 }

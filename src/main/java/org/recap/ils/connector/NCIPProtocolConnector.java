@@ -19,11 +19,15 @@ import org.extensiblecatalog.ncip.v2.service.CheckOutItemInitiationData;
 import org.extensiblecatalog.ncip.v2.service.CheckOutItemResponseData;
 import org.extensiblecatalog.ncip.v2.service.LookupUserInitiationData;
 import org.extensiblecatalog.ncip.v2.service.LookupUserResponseData;
+import org.extensiblecatalog.ncip.v2.service.LookupUserResponseData;
+import org.extensiblecatalog.ncip.v2.service.DeleteItemResponseData;
 import org.extensiblecatalog.ncip.v2.service.NCIPResponseData;
 import org.extensiblecatalog.ncip.v2.service.RecallItemInitiationData;
 import org.extensiblecatalog.ncip.v2.service.RecallItemResponseData;
 import org.extensiblecatalog.ncip.v2.service.Problem;
 import org.extensiblecatalog.ncip.v2.service.RequestItemInitiationData;
+import org.extensiblecatalog.ncip.v2.service.DeleteItemInitiationData;
+
 import org.json.JSONObject;
 
 import org.recap.PropertyKeyConstants;
@@ -33,6 +37,7 @@ import org.recap.model.request.ItemRequestInformation;
 import org.recap.ils.protocol.ncip.AcceptItem;
 import org.recap.ils.protocol.ncip.CheckinItem;
 import org.recap.ils.protocol.ncip.CheckoutItem;
+import org.recap.ils.protocol.ncip.DeleteItem;
 import org.recap.ils.protocol.ncip.LookupUser;
 import org.recap.ils.protocol.ncip.RecallItem;
 import org.recap.ils.protocol.ncip.RequestItem;
@@ -48,6 +53,7 @@ import org.recap.model.response.ItemHoldResponse;
 import org.recap.model.response.ItemInformationResponse;
 import org.recap.model.response.ItemRecallResponse;
 import org.recap.model.response.PatronInformationResponse;
+import org.recap.model.response.DeleteItemResponse;
 import org.recap.ils.protocol.rest.util.RestApiResponseUtil;
 import org.recap.model.ILSConfigProperties;
 import org.recap.model.AbstractResponseItem;
@@ -642,6 +648,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
     private ItemHoldResponse acceptItem(String itemIdentifier, Integer requestId, String patronIdentifier, String callInstitutionId, String itemInstitutionId,  String pickupLocation, String title, String author, String callNumber) {
         AcceptItem acceptItem = new AcceptItem();
         ItemHoldResponse itemHoldResponse = new ItemHoldResponse();
+        DeleteItemResponse deleteItemResponse = new DeleteItemResponse();
         String responseString = null;
         String itemAgencyId = null;
         JSONObject responseObject;
@@ -679,9 +686,49 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
             log.info(responseObject.toString());
 
             if (!acceptItemResponse.getProblems().isEmpty()) {
-                itemHoldResponse.setSuccess(Boolean.FALSE);
+                                List<Problem> problemList = acceptItemResponse.getProblems();
+                                for(Problem problem: problemList) {
+                                        if (problem.getProblemDetail().contains(ScsbConstants.UNIQUE_BARCODE)) {
+                                                String allowHoldonOwnItem = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_ALLOW_HOLD_ON_OWN_ITEM_REQUEST);
+                                                if (Boolean.TRUE.toString().equalsIgnoreCase(allowHoldonOwnItem)) {
+                                                        log.info("Barcode must be unique Error. Deleting barcode from temporary records{}", itemIdentifier);
+                                                        deleteItemResponse = deleteItem(callInstitutionId, itemIdentifier);
+                                                        log.info("deleteItemResponse >>>>>>>> " +  deleteItemResponse.getItemBarcode());
+                                                        if(deleteItemResponse.getItemBarcode() != null) {
+                                                                requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, acceptItemInitiationData);
+                                                                response = executeRequest(requestMessageStream);
+                                                                responseData = null;
+                                                                if(response != null) {
+                                                                        int responseCode = response.getStatusLine().getStatusCode();
+                                                                        if (responseCode > 399) {
+                                                                               throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "ILS Server" + returnedResponseCode + responseCode + responseBody + responseString);
+                                                                            }
+                                                                        else {
+                                                                                responseData = getResponseString(response, ncipToolkitUtil, responseData);
+                                                                                acceptItemResponse = (AcceptItemResponseData) responseData;
+                                                                                responseObject = acceptItem.getAcceptItemResponse(acceptItemResponse);
+                                                                                log.info(responseObject.toString());
+
+                                                                                    }
+                                                                    }
+                                                                else {
+                                                                        log.info (" Response is null");
+                                                                    }
+
+                                                                }
+                                                        else {
+
+                                itemHoldResponse.setSuccess(Boolean.FALSE);
                 itemHoldResponse.setScreenMessage(failureReason + acceptItemResponse.getProblems());
                 return itemHoldResponse;
+
+                                                                                }
+
+                                                                                    }
+                                                                }
+                                                    }
+
+
             }
 
             itemHoldResponse.setItemOwningInstitution(itemInstitutionId);
@@ -746,6 +793,88 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
         }
         return responseData;
     }
+
+        private DeleteItemResponse deleteItem(String callInstitutionId, String itemIdentifier) {
+                DeleteItem deleteItem = new DeleteItem();
+                DeleteItemResponse deleteItemResponse = new DeleteItemResponse();
+                String responseString = null;
+                String itemAgencyId = null;
+                JSONObject responseObject;
+                try {
+                        DeleteItemInitiationData deleteItemInitiationData = new DeleteItemInitiationData();
+                        List<ItemEntity> itemEntities = itemDetailsRepository.findByBarcode(itemIdentifier);
+                        ItemEntity itemEntity = !itemEntities.isEmpty() ? itemEntities.get(0) : null;
+                        String owningInstItemId = itemEntity != null ? itemEntity.getOwningInstitutionItemId() : null;
+                        String useRestrictions = itemEntity != null ? itemEntity.getUseRestrictions() : null;
+                        if(useRestrictions != null && useRestrictions.trim().length() > 0) {
+                                itemAgencyId = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_RESTRICTED_ACCEPT_ITEM_AGENCY_ID);
+                                deleteItemInitiationData = deleteItem.getDeleteItemInitiationData(itemIdentifier, owningInstItemId, getNcipAgencyId(), getNcipScheme(), itemAgencyId);
+                            }
+                        else {
+                                itemAgencyId = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_UNRESTRICTED_ACCEPT_ITEM_AGENCY_ID);
+                                deleteItemInitiationData = deleteItem.getDeleteItemInitiationData(itemIdentifier, owningInstItemId, getNcipAgencyId(), getNcipScheme(), itemAgencyId);
+                            }
+
+                                NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
+                        InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, deleteItemInitiationData);
+                        HttpResponse response = executeRequest(requestMessageStream);
+                        NCIPResponseData responseData = null;
+                        if(response != null) {
+                                int responseCode = response.getStatusLine().getStatusCode();
+                                log.info("response >>>>>>"  + response);
+                                log.info("response code >>>>>>>>>> " + responseCode);
+                                if (responseCode > 399) {
+                                        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "ILS Server" + returnedResponseCode + responseCode + responseBody + responseString);
+                                    }
+                                else {
+                                        responseData = getResponseString(response, ncipToolkitUtil, responseData);
+                                    }
+                            }
+                        else {
+                                 log.info("response is null");
+                            }
+
+                                //transforms the  NCIP Objects into a JSON response object
+                                        log.info("deleteitemresponse in deleteItem () >>>>>>> " + responseData.getClass());
+                        log.info(" responseData.getProblems() >>>>>>> " +  responseData.getProblems());
+
+                                DeleteItemResponseData deleteItemResponseData =  (DeleteItemResponseData) responseData;
+                        responseObject = deleteItem.getDeleteItemResponse(deleteItemResponseData);
+                        log.info("responseObject in deleteItem () >>>>>>> " + responseObject);
+
+                                log.info(responseObject.toString());
+
+                                if (!deleteItemResponseData.getProblems().isEmpty()) {
+                                log.info("deleteItemResponseData.getProblems() not empty >>>>>>>>");
+                                deleteItemResponse.setSuccess(Boolean.FALSE);
+                                deleteItemResponse.setScreenMessage(failureReason + deleteItemResponseData.getProblems());
+                                return deleteItemResponse;
+                            }
+                        else {
+                                deleteItemResponse.setSuccess(Boolean.TRUE);
+                                deleteItemResponse.setScreenMessage(ScsbCommonConstants.SUCCESS);
+                                deleteItemResponse.setItemBarcode(deleteItemResponseData.getItemId().getItemIdentifierValue());
+
+                                    }
+
+                            } catch (HttpClientErrorException httpException) {
+                        log.info("HttpClientErrorException >>>>>>>>");
+
+                                log.error(ScsbCommonConstants.LOG_ERROR, httpException);
+                        deleteItemResponse.setSuccess(false);
+                        deleteItemResponse.setScreenMessage(httpException.getStatusText());
+                    } catch (Exception e) {
+                        log.info("Exception >>>>>>>>" + e.getMessage());
+
+                                log.error(ScsbCommonConstants.LOG_ERROR, e.getMessage());
+                        deleteItemResponse.setSuccess(false);
+                        deleteItemResponse.setScreenMessage(e.getMessage());
+                    }
+
+                        return deleteItemResponse;
+            }
+
+
             private ItemHoldResponse requestItem(String itemIdentifier, Integer requestId, String patronIdentifier, String callInstitutionId, String itemInstitutionId,  String pickupLocation, String bibId, String title, String author, String callNumber) {
                 RequestItem requestItem = new RequestItem();
                 ItemHoldResponse itemHoldResponse = new ItemHoldResponse();
