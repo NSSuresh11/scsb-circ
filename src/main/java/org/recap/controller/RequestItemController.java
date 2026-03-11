@@ -270,7 +270,7 @@ public class RequestItemController {
     public AbstractResponseItem patronInformation(@RequestBody ItemRequestInformation itemRequestInformation, String callInstitution) {
         PatronInformationResponse patronInformationResponse;
         String callInst = callingInstitution(callInstitution, itemRequestInformation);
-        patronInformationResponse = (PatronInformationResponse) ilsProtocolConnectorFactory.getIlsProtocolConnector(callInst).lookupPatron(itemRequestInformation.getPatronBarcode());
+        patronInformationResponse = (PatronInformationResponse) ilsProtocolConnectorFactory.getIlsProtocolConnector(callInst).lookupPatron(itemRequestInformation.getPatronBarcode(), callInst);
         return patronInformationResponse;
     }
 

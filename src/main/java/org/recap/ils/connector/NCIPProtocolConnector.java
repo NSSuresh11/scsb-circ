@@ -372,7 +372,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
     public Object placeHold(String itemIdentifier, Integer requestId, String patronIdentifier, String callInstitutionId, String itemInstitutionId, String expirationDate, String bibId, String pickupLocation, String trackingId, String title, String author, String callNumber) {
         log.info("Item barcode {} received for hold request in " + callInstitutionId + " for patron {}", itemIdentifier, patronIdentifier);
         ItemHoldResponse itemHoldResponse = new ItemHoldResponse();
-        PatronInformationResponse patronInformationResponse = (PatronInformationResponse) lookupPatron(patronIdentifier);
+        PatronInformationResponse patronInformationResponse = (PatronInformationResponse) lookupPatron(patronIdentifier, callInstitutionId);
         if(patronInformationResponse.isSuccess()) {
             if (callInstitutionId.equalsIgnoreCase(itemInstitutionId)) {
                 String allowHoldonOwnItem = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_ALLOW_HOLD_ON_OWN_ITEM_REQUEST);
@@ -468,15 +468,22 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
     }
 
     @Override
-    public AbstractResponseItem lookupPatron(String patronIdentifier) {
+    public AbstractResponseItem lookupPatron(String patronIdentifier, String callInstitutionId) {
         log.info("Lookup for patron {}", patronIdentifier);
         PatronInformationResponse patronInformationResponse = new PatronInformationResponse();
         String responseString = null;
         JSONObject responseObject;
-
+        LookupUserInitiationData lookupUserInitiationData = new LookupUserInitiationData();
         try {
             LookupUser lookupUser = new LookupUser();
-            LookupUserInitiationData lookupUserInitiationData = lookupUser.getLookupUserInitiationData(patronIdentifier, getNcipAgencyId());
+            String useFromAgencyId = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_USE_FROM_AGENCY_ID);
+            if (Boolean.TRUE.toString().equalsIgnoreCase(useFromAgencyId)) {
+                String fromAgencyId = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_FROM_AGENCY_ID);
+                lookupUserInitiationData = lookupUser.getLookupUserInitiationData(patronIdentifier, fromAgencyId, getNcipAgencyId());
+            }
+            else {
+                lookupUserInitiationData = lookupUser.getLookupUserInitiationData(patronIdentifier, getNcipAgencyId(), getNcipAgencyId());
+            }
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, lookupUserInitiationData);
             HttpResponse response = executeRequest(requestMessageStream);

@@ -472,7 +472,7 @@ public class SIPProtocolConnector extends AbstractProtocolConnector {
     }
 
     @Override
-    public AbstractResponseItem lookupPatron(String patronIdentifier) {
+    public AbstractResponseItem lookupPatron(String patronIdentifier, String callInst) {
         SIP2SocketConnection connection = getSocketConnection();
         SIP2PatronInformationRequest sip2PatronInformationRequest;
         SIP2PatronInformationResponse sip2PatronInformationResponse;
