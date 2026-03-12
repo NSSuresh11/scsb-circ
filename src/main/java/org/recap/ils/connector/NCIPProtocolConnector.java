@@ -181,7 +181,10 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
         try {
             CheckoutItem checkoutItem = new CheckoutItem();
             log.info("getInstitution() >>>>>> " + getInstitution());
-            CheckOutItemInitiationData checkOutItemInitiationData = checkoutItem.getCheckOutItemInitiationData(getInstitution(), itemIdentifier, requestId, patronIdentifier, getNcipAgencyId());
+            String profileType = propertyUtil.getPropertyByInstitutionAndKey(getInstitution(), PropertyKeyConstants.ILS.ILS_APPLICATION_PROFILE_TYPE);
+            log.info("profileType >>>>>>>>>>> " + profileType);
+
+            CheckOutItemInitiationData checkOutItemInitiationData = checkoutItem.getCheckOutItemInitiationData(profileType, itemIdentifier, requestId, patronIdentifier, getNcipAgencyId());
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, checkOutItemInitiationData);
             HttpResponse response =  executeRequest(requestMessageStream);
@@ -646,6 +649,8 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
         String responseString = null;
         String itemAgencyId = null;
         JSONObject responseObject;
+        String profileType = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_APPLICATION_PROFILE_TYPE);
+
         try {
             AcceptItemInitiationData acceptItemInitiationData = new AcceptItemInitiationData();
             List<ItemEntity> itemEntities = itemDetailsRepository.findByBarcode(itemIdentifier);

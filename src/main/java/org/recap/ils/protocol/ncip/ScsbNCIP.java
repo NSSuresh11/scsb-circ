@@ -81,7 +81,6 @@ public class ScsbNCIP {
     public ApplicationProfileType getApplicationProfileType(String profile) {
         if (profile != null ) {
             return new ApplicationProfileType(null, profile.toString());
-
         }
         else {
             return new ApplicationProfileType(null, ScsbConstants.AGENCY_ID_SCSB);
