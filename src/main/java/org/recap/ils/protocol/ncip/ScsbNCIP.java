@@ -28,10 +28,6 @@ import java.util.Iterator;
 @Slf4j
 public class ScsbNCIP {
 
-    @Autowired
-    CommonUtil commonUtil;
-
-
     public JSONObject generateNcipProblems(NCIPResponseData responseData) {
         JSONObject returnJson = new JSONObject();
         JSONArray array = new JSONArray();
@@ -59,6 +55,7 @@ public class ScsbNCIP {
 
 
     public InitiationHeader getInitiationHeaderwithoutScheme(InitiationHeader initiationHeader, String institution, String fromAgency, String toAgency){
+        CommonUtil commonUtil = new CommonUtil();
         initiationHeader.setApplicationProfileType(commonUtil.getApplicationProfileType(institution));
         FromAgencyId fromAgencyId = new FromAgencyId();
         fromAgencyId.setAgencyId(new AgencyId(fromAgency));
@@ -70,6 +67,7 @@ public class ScsbNCIP {
     }
 
     public InitiationHeader getInitiationHeaderwithScheme(InitiationHeader initiationHeader, String ncipScheme, String fromAgency, String toAgency){
+        CommonUtil commonUtil = new CommonUtil();
         initiationHeader.setApplicationProfileType(commonUtil.getApplicationProfileType(ScsbConstants.AGENCY_ID_SCSB));
         FromAgencyId fromAgencyId = new FromAgencyId();
         fromAgencyId.setAgencyId(new AgencyId(ncipScheme, fromAgency));
