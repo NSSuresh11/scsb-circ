@@ -119,7 +119,7 @@ public abstract class AbstractProtocolConnector {
      * @param patronIdentifier the patron identifier
      * @return the abstract response item
      */
-    public abstract AbstractResponseItem lookupPatron(String patronIdentifier);
+    public abstract AbstractResponseItem lookupPatron(String patronIdentifier, String institutionCode);
 
     /**
      * Recall item object.
