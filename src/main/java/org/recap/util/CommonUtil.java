@@ -374,6 +374,7 @@ public class CommonUtil {
     }
 
     public ApplicationProfileType getApplicationProfileType(String institution) {
+        log.info("institution >>>>> " + institution);
 
         if(institution.equalsIgnoreCase(ScsbConstants.AGENCY_ID_SCSB)) {
             return new ApplicationProfileType(null, ScsbConstants.AGENCY_ID_SCSB);

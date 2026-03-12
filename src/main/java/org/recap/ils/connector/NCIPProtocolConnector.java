@@ -180,7 +180,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
         JSONObject responseObject = new JSONObject();
         try {
             CheckoutItem checkoutItem = new CheckoutItem();
-
+            log.info("getInstitution() >>>>>> " + getInstitution());
             CheckOutItemInitiationData checkOutItemInitiationData = checkoutItem.getCheckOutItemInitiationData(getInstitution(), itemIdentifier, requestId, patronIdentifier, getNcipAgencyId());
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, checkOutItemInitiationData);
@@ -301,7 +301,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
         ItemEntity itemEntity = !itemEntities.isEmpty() ? itemEntities.get(0) : null;
         String imsLocation = itemEntity != null ? itemEntity.getImsLocationEntity().getImsLocationCode() : null;
         Boolean isRemoteCheckin = Boolean.FALSE;
-
+        log.info("getInstitution() >>> " + getInstitution());
         String remoteCheckin = propertyUtil.getPropertyByInstitutionAndKey(getInstitution(), PropertyKeyConstants.ILS.ILS_REMOTE_CHECKIN);
         if(Boolean.TRUE.toString().equalsIgnoreCase(remoteCheckin) && (
                 getInstitution().equals(itemRequestInformation.getItemOwningInstitution())
@@ -372,7 +372,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
     public Object placeHold(String itemIdentifier, Integer requestId, String patronIdentifier, String callInstitutionId, String itemInstitutionId, String expirationDate, String bibId, String pickupLocation, String trackingId, String title, String author, String callNumber) {
         log.info("Item barcode {} received for hold request in " + callInstitutionId + " for patron {}", itemIdentifier, patronIdentifier);
         ItemHoldResponse itemHoldResponse = new ItemHoldResponse();
-        PatronInformationResponse patronInformationResponse = (PatronInformationResponse) lookupPatron(patronIdentifier);
+        PatronInformationResponse patronInformationResponse = (PatronInformationResponse) lookupPatron(patronIdentifier, callInstitutionId);
         if(patronInformationResponse.isSuccess()) {
             if (callInstitutionId.equalsIgnoreCase(itemInstitutionId)) {
                 String allowHoldonOwnItem = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_ALLOW_HOLD_ON_OWN_ITEM_REQUEST);
@@ -468,7 +468,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
     }
 
     @Override
-    public AbstractResponseItem lookupPatron(String patronIdentifier) {
+    public AbstractResponseItem lookupPatron(String patronIdentifier, String callInstitutionId) {
         log.info("Lookup for patron {}", patronIdentifier);
         PatronInformationResponse patronInformationResponse = new PatronInformationResponse();
         String responseString = null;
@@ -476,7 +476,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
 
         try {
             LookupUser lookupUser = new LookupUser();
-            LookupUserInitiationData lookupUserInitiationData = lookupUser.getLookupUserInitiationData(getInstitution(), patronIdentifier, getNcipAgencyId());
+            LookupUserInitiationData lookupUserInitiationData = lookupUser.getLookupUserInitiationData(callInstitutionId, patronIdentifier, getNcipAgencyId());
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, lookupUserInitiationData);
             HttpResponse response = executeRequest(requestMessageStream);
@@ -538,6 +538,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
     @Override
     public Object recallItem(String itemIdentifier, String patronIdentifier, String institutionId, String expirationDate, String bibId, String pickupLocation) {
         log.info("recallItem for Item {}", itemIdentifier);
+        log.info("getInstitution() >>>>>> " + getInstitution());
         ItemRecallResponse itemRecallResponse = new ItemRecallResponse();
         String responseString = null;
         JSONObject responseObject;

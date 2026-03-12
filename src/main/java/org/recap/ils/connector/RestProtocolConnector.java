@@ -600,7 +600,7 @@ public class RestProtocolConnector extends AbstractProtocolConnector {
     }
 
     @Override
-    public AbstractResponseItem lookupPatron(String patronIdentifier) {
+    public AbstractResponseItem lookupPatron(String patronIdentifier, String institutionCode) {
         return null;
     }
 
