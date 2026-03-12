@@ -33,10 +33,10 @@ public class LookupUser extends ScsbNCIP {
         this.fromAgency = fromAgency;
         return this;
     }
-    public LookupUserInitiationData getLookupUserInitiationData(String useridString, String ncipAgencyId) {
+    public LookupUserInitiationData getLookupUserInitiationData(String institution, String useridString, String ncipAgencyId) {
         LookupUserInitiationData lookupUserInitationData = new LookupUserInitiationData();
         InitiationHeader initiationHeader = new InitiationHeader();
-        initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, ncipAgencyId, ncipAgencyId);
+        initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, institution, ncipAgencyId, ncipAgencyId);
         UserId userid = new UserId();
         userid.setAgencyId(new AgencyId(fromAgency));
         userid.setUserIdentifierValue(useridString);

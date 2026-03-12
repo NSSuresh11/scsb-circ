@@ -14,8 +14,11 @@ import org.extensiblecatalog.ncip.v2.service.ToAgencyId;
 import org.extensiblecatalog.ncip.v2.service.ValidationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.recap.PropertyKeyConstants;
 import org.recap.common.ScsbConstants;
 import org.recap.ils.protocol.ncip.util.NCIPToolKitUtil;
+import org.recap.util.CommonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +27,10 @@ import java.util.Iterator;
 
 @Slf4j
 public class ScsbNCIP {
+
+    @Autowired
+    CommonUtil commonUtil;
+
 
     public JSONObject generateNcipProblems(NCIPResponseData responseData) {
         JSONObject returnJson = new JSONObject();
@@ -50,12 +57,9 @@ public class ScsbNCIP {
         return requestBody;
     }
 
-    public ApplicationProfileType getApplicationProfileType() {
-        return new ApplicationProfileType(null, ScsbConstants.AGENCY_ID_SCSB);
-    }
 
-    public InitiationHeader getInitiationHeaderwithoutScheme(InitiationHeader initiationHeader, String fromAgency, String toAgency){
-        initiationHeader.setApplicationProfileType(getApplicationProfileType());
+    public InitiationHeader getInitiationHeaderwithoutScheme(InitiationHeader initiationHeader, String institution, String fromAgency, String toAgency){
+        initiationHeader.setApplicationProfileType(commonUtil.getApplicationProfileType(institution));
         FromAgencyId fromAgencyId = new FromAgencyId();
         fromAgencyId.setAgencyId(new AgencyId(fromAgency));
         ToAgencyId toAgencyId = new ToAgencyId();
@@ -66,7 +70,7 @@ public class ScsbNCIP {
     }
 
     public InitiationHeader getInitiationHeaderwithScheme(InitiationHeader initiationHeader, String ncipScheme, String fromAgency, String toAgency){
-        initiationHeader.setApplicationProfileType(getApplicationProfileType());
+        initiationHeader.setApplicationProfileType(commonUtil.getApplicationProfileType(ScsbConstants.AGENCY_ID_SCSB));
         FromAgencyId fromAgencyId = new FromAgencyId();
         fromAgencyId.setAgencyId(new AgencyId(ncipScheme, fromAgency));
         ToAgencyId toAgencyId = new ToAgencyId();

@@ -181,7 +181,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
         try {
             CheckoutItem checkoutItem = new CheckoutItem();
 
-            CheckOutItemInitiationData checkOutItemInitiationData = checkoutItem.getCheckOutItemInitiationData(itemIdentifier, requestId, patronIdentifier, getNcipAgencyId());
+            CheckOutItemInitiationData checkOutItemInitiationData = checkoutItem.getCheckOutItemInitiationData(getInstitution(), itemIdentifier, requestId, patronIdentifier, getNcipAgencyId());
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, checkOutItemInitiationData);
             HttpResponse response =  executeRequest(requestMessageStream);
@@ -311,7 +311,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
         if (isRemoteCheckin.booleanValue()) {
             String remoteProfileType = propertyUtil.getPropertyByInstitutionAndLocationAndKey(getInstitution(), imsLocation, PropertyKeyConstants.ILS.ILS_REMOTE_PROFILE_TYPE);
             if (!itemRequestInformation.getRequestingInstitution().equals(itemRequestInformation.getItemOwningInstitution()) || itemRequestInformation.getRequestType().equals(ScsbCommonConstants.REQUEST_TYPE_EDD)) {
-                CheckInItemInitiationData checkInItemInitiationData = checkInItem.getCheckInItemInitiationData(itemIdentifier,  getNcipAgencyId());
+                CheckInItemInitiationData checkInItemInitiationData = checkInItem.getCheckInItemInitiationData(getInstitution(), itemIdentifier,  getNcipAgencyId());
                 CheckInItemResponseData checkinItemResponse = getCheckinResponse(checkInItem, checkInItemInitiationData);
                 if (!checkinItemResponse.getProblems().isEmpty()) {
                     itemCheckinResponse.setSuccess(Boolean.FALSE);
@@ -342,7 +342,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
             }
 
         } else {
-            CheckInItemInitiationData checkInItemInitiationData = checkInItem.getCheckInItemInitiationData(itemRequestInformation.getItemBarcodes().get(0), getNcipAgencyId());
+            CheckInItemInitiationData checkInItemInitiationData = checkInItem.getCheckInItemInitiationData(getInstitution(), itemRequestInformation.getItemBarcodes().get(0), getNcipAgencyId());
             CheckInItemResponseData checkinItemResponse = getCheckinResponse(checkInItem, checkInItemInitiationData);
             if (!checkinItemResponse.getProblems().isEmpty()) {
                 itemCheckinResponse.setSuccess(Boolean.FALSE);
@@ -476,7 +476,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
 
         try {
             LookupUser lookupUser = new LookupUser();
-            LookupUserInitiationData lookupUserInitiationData = lookupUser.getLookupUserInitiationData(patronIdentifier, getNcipAgencyId());
+            LookupUserInitiationData lookupUserInitiationData = lookupUser.getLookupUserInitiationData(getInstitution(), patronIdentifier, getNcipAgencyId());
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, lookupUserInitiationData);
             HttpResponse response = executeRequest(requestMessageStream);
@@ -544,7 +544,7 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
 
         try {
             RecallItem recallItem = new RecallItem();
-            RecallItemInitiationData recallItemInitiationData = recallItem.getRecallItemInitiationData(itemIdentifier, patronIdentifier, getNcipAgencyId());
+            RecallItemInitiationData recallItemInitiationData = recallItem.getRecallItemInitiationData(getInstitution(), itemIdentifier, patronIdentifier, getNcipAgencyId());
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, recallItemInitiationData);
 

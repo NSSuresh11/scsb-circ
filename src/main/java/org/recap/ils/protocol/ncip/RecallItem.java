@@ -16,10 +16,10 @@ import static org.recap.common.ScsbConstants.REQUEST_ILS_EXCEPTION;
 
 public class RecallItem extends ScsbNCIP {
 
-    public RecallItemInitiationData getRecallItemInitiationData(String itemIdentifier, String patronIdentifier, String ncipAgencyId) {
+    public RecallItemInitiationData getRecallItemInitiationData(String institution, String itemIdentifier, String patronIdentifier, String ncipAgencyId) {
         RecallItemInitiationData recallItemInitiationData = new RecallItemInitiationData();
         InitiationHeader initiationHeader = new InitiationHeader();
-        initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, ncipAgencyId, ncipAgencyId);
+        initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, institution, ncipAgencyId, ncipAgencyId);
         UserId userid = new UserId();
         userid.setUserIdentifierValue(patronIdentifier);
         ItemId itemId = new ItemId();

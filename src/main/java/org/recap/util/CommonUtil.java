@@ -5,6 +5,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.extensiblecatalog.ncip.v2.service.ApplicationProfileType;
 import org.recap.PropertyKeyConstants;
 import org.recap.ScsbCommonConstants;
 import org.recap.common.ScsbConstants;
@@ -371,5 +372,17 @@ public class CommonUtil {
         String responseString = responseBody.replaceAll("<ns1:","<");
         return responseString.replaceAll("</ns1:","</");
     }
+
+    public ApplicationProfileType getApplicationProfileType(String institution) {
+
+        if(institution.equalsIgnoreCase(ScsbConstants.AGENCY_ID_SCSB)) {
+            return new ApplicationProfileType(null, ScsbConstants.AGENCY_ID_SCSB);
+        }
+        else {
+            String profileType = propertyUtil.getPropertyByInstitutionAndKey(institution, PropertyKeyConstants.ILS.ILS_APPLICATION_PROFILE_TYPE);
+            return new ApplicationProfileType(null, profileType);
+        }
+    }
+
 
 }

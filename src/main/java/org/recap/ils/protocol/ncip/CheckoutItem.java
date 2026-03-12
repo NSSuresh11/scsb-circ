@@ -24,11 +24,11 @@ import static org.recap.common.ScsbConstants.REQUEST_ILS_EXCEPTION;
 @Slf4j
 public class CheckoutItem extends ScsbNCIP {
 
-    public CheckOutItemInitiationData getCheckOutItemInitiationData(String itemIdentifier, Integer requestId, String patronIdentifier, String ncipAgencyId) {
+    public CheckOutItemInitiationData getCheckOutItemInitiationData(String institution, String itemIdentifier, Integer requestId, String patronIdentifier, String ncipAgencyId) {
         try {
             CheckOutItemInitiationData checkoutItemInitiationData = new CheckOutItemInitiationData();
             InitiationHeader initiationHeader = new InitiationHeader();
-            initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, ScsbConstants.AGENCY_ID_SCSB, ncipAgencyId);
+            initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, institution, ScsbConstants.AGENCY_ID_SCSB, ncipAgencyId);
             UserId userid = new UserId();
             userid.setUserIdentifierValue(patronIdentifier);
             ItemId itemId = new ItemId();

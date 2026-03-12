@@ -45,10 +45,10 @@ public class CheckinItem extends ScsbNCIP {
         checkinItemInitiationData.setItemId(itemId);
         return checkinItemInitiationData;
     }
-    public CheckInItemInitiationData getCheckInItemInitiationData(String itemIdentifier, String ncipAgencyId) {
+    public CheckInItemInitiationData getCheckInItemInitiationData(String institution, String itemIdentifier, String ncipAgencyId) {
         CheckInItemInitiationData checkinItemInitiationData = new CheckInItemInitiationData();
         InitiationHeader initiationHeader = new InitiationHeader();
-        initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, ScsbConstants.AGENCY_ID_SCSB, ncipAgencyId);
+        initiationHeader = getInitiationHeaderwithoutScheme(initiationHeader, institution, ScsbConstants.AGENCY_ID_SCSB, ncipAgencyId);
         checkinItemInitiationData.setInitiationHeader(initiationHeader);
         ItemId itemId = new ItemId();
         itemId.setItemIdentifierValue(itemIdentifier);
