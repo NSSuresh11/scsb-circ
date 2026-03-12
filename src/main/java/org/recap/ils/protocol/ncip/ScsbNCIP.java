@@ -54,9 +54,9 @@ public class ScsbNCIP {
     }
 
 
-    public InitiationHeader getInitiationHeaderwithoutScheme(InitiationHeader initiationHeader, String institution, String fromAgency, String toAgency){
+    public InitiationHeader getInitiationHeaderwithoutScheme(InitiationHeader initiationHeader, String profileType, String fromAgency, String toAgency){
         CommonUtil commonUtil = new CommonUtil();
-        initiationHeader.setApplicationProfileType(commonUtil.getApplicationProfileType(institution));
+        initiationHeader.setApplicationProfileType(getApplicationProfileType(profileType));
         FromAgencyId fromAgencyId = new FromAgencyId();
         fromAgencyId.setAgencyId(new AgencyId(fromAgency));
         ToAgencyId toAgencyId = new ToAgencyId();
@@ -77,6 +77,17 @@ public class ScsbNCIP {
         initiationHeader.setToAgencyId(toAgencyId);
         return initiationHeader;
     }
+
+    public ApplicationProfileType getApplicationProfileType(String profile) {
+        if (profile != null ) {
+            return new ApplicationProfileType(null, profile.toString());
+
+        }
+        else {
+            return new ApplicationProfileType(null, ScsbConstants.AGENCY_ID_SCSB);
+        }
+    }
+
 
     public InitiationHeader getInitiationHeaderwithoutProfile(InitiationHeader initiationHeader, String ncipScheme, String fromAgency, String toAgency){
         FromAgencyId fromAgencyId = new FromAgencyId();

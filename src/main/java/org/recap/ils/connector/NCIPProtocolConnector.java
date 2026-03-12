@@ -476,7 +476,9 @@ public class NCIPProtocolConnector extends AbstractProtocolConnector {
 
         try {
             LookupUser lookupUser = new LookupUser();
-            LookupUserInitiationData lookupUserInitiationData = lookupUser.getLookupUserInitiationData(callInstitutionId, patronIdentifier, getNcipAgencyId());
+            String profileType = propertyUtil.getPropertyByInstitutionAndKey(callInstitutionId, PropertyKeyConstants.ILS.ILS_APPLICATION_PROFILE_TYPE);
+            log.info("profileType >>>>>>>>>>> " + profileType);
+            LookupUserInitiationData lookupUserInitiationData = lookupUser.getLookupUserInitiationData(profileType, patronIdentifier, getNcipAgencyId());
             NCIPToolKitUtil ncipToolkitUtil = NCIPToolKitUtil.getInstance();
             InputStream requestMessageStream = ncipToolkitUtil.translator.createInitiationMessageStream(ncipToolkitUtil.serviceContext, lookupUserInitiationData);
             HttpResponse response = executeRequest(requestMessageStream);
