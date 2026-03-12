@@ -430,6 +430,8 @@ public final class ScsbConstants {
     public static final String TOOLKIT_PROP_FILE = "toolkit.properties";
     public static final String BIBLIOGRAPHIC_DESCRIPTION = "bibliographicDescription";
     public static final String AGENCY_ID_SCSB = "SCSB";
+    public static final String RECAP_NEW = "ReCap";
+
 
     public static final String AUTHOR = "Author";
     public static final String CALL_NUMBER = "call number";

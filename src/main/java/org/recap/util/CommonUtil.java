@@ -382,7 +382,12 @@ public class CommonUtil {
         else {
             PropertyUtil propertyUtil1 = new PropertyUtil();
             String profileType = propertyUtil1.getPropertyByInstitutionAndKey(institution, PropertyKeyConstants.ILS.ILS_APPLICATION_PROFILE_TYPE);
-            return new ApplicationProfileType(null, profileType);
+            if(profileType != null) {
+                return new ApplicationProfileType(null, profileType);
+            }
+            else {
+                return new ApplicationProfileType(null, ScsbConstants.RECAP_NEW);
+            }
         }
     }
 
