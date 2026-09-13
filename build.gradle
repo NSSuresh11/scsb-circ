@@ -74,9 +74,9 @@ dependencies {
 	implementation('org.apache.camel:camel-mail:4.18.4')
 	implementation('org.apache.camel:camel-ftp:4.18.4')
 	implementation('org.apache.camel:camel-zipfile:4.18.4')
-	implementation('org.apache.activemq:activemq-pool:6.2.0')
-	implementation('org.apache.activemq:activemq-broker:6.2.0')
-	implementation 'org.apache.activemq:activemq-client:6.2.0'
+	implementation('org.apache.activemq:activemq-pool:6.2.9')
+	implementation('org.apache.activemq:activemq-broker:6.2.9')
+	implementation 'org.apache.activemq:activemq-client:6.2.9'
 	implementation('info.freelibrary:freelib-marc4j:2.6.12')
     implementation('org.apache.poi:poi:5.5.1')
     implementation('org.apache.camel:camel-zip-deflater:4.18.4')
