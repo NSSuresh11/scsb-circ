@@ -22,7 +22,8 @@ import java.util.List;
         "data",
         "count",
         "statusCode",
-        "debugInfo"
+        "debugInfo",
+        "statusMessage"
 })
 @Data
 public class JobResponse {
