@@ -52,8 +52,7 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 
-	//implementation 'net.sf.dozer:dozer:5.5.1'
-    implementation 'com.github.dozermapper:dozer-core:7.0.0'
+	implementation 'net.sf.dozer:dozer:5.5.1'
     implementation('org.apache.logging.log4j:log4j-core:2.26.1')
     implementation('org.apache.commons:commons-lang3:3.20.0')
 
