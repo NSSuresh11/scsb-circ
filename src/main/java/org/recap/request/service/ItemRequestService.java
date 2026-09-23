@@ -16,13 +16,9 @@ import org.recap.model.request.ItemRequestInformation;
 import org.recap.ims.service.GFALasService;
 import org.recap.model.ItemRefileRequest;
 import org.recap.controller.RequestItemController;
-import org.recap.model.response.ItemCreateBibResponse;
-import org.recap.model.response.ItemHoldResponse;
+import org.recap.model.response.*;
 import org.recap.model.request.ReplaceRequest;
-import org.recap.model.response.ItemInformationResponse;
-import org.recap.model.response.ItemRecallResponse;
 import org.recap.model.jpa.*;
-import org.recap.model.response.ItemRefileResponse;
 import org.recap.model.search.SearchResultRow;
 import org.recap.repository.jpa.*;
 import org.recap.service.RestHeaderService;
@@ -46,14 +42,8 @@ import java.io.StringReader;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class for Request Item Service
@@ -1415,4 +1405,65 @@ public class ItemRequestService {
         }
         return ScsbCommonConstants.SUCCESS + " : " + ScsbCommonConstants.REQUEST_MESSAGE_RECEVIED;
     }
+
+    /**
+     * This method gets item status by item's barcode and isDeleted field which is false.
+     *
+     * @param barcodeList the barcode list
+     * @return the item status by barcode and is deleted false list
+     */
+    public List<RequestStatusResponse> getItemRequestStatusByBarcode(List<String> barcodeList) {
+        List<String> barcodes = new ArrayList<>();
+        List<String> availableBarcodes = new ArrayList<>();
+        List<String> requestBarcodes = new ArrayList<>();
+
+        RequestStatusResponse requestStatusResponse = new RequestStatusResponse();
+
+        for (String barcode : barcodeList) {
+            barcodes.add(barcode.trim());
+        }
+        List<RequestStatusResponse> requestStatusResponses = new ArrayList<>();
+        List<ItemEntity> itemEntityList = itemDetailsRepository.findByBarcodeInAndComplete(barcodes, Boolean.FALSE);
+        for (ItemEntity itemEntity : itemEntityList) {
+            availableBarcodes.add(itemEntity.getBarcode());
+        }
+        Set<String> availableBarcodeSet = new HashSet<>(availableBarcodes);
+
+        List<String> unavalilableBarcodes = barcodes.stream()
+                .filter(element -> !availableBarcodeSet.contains(element))
+                .collect(Collectors.toList());
+        for (String unavalilableBarcode : unavalilableBarcodes) {
+            requestStatusResponse.setItemBarcode(unavalilableBarcode);
+            requestStatusResponse.setSuccess(Boolean.FALSE);
+            requestStatusResponse.setErrorMessage(ScsbConstants.ITEM_BARCDE_DOESNOT_EXIST);
+            requestStatusResponses.add(requestStatusResponse);
+        }
+            List<RequestItemEntity> requestItemEntityList =  requestItemDetailsRepository.findRequestStatusByItemBarcodes(availableBarcodes);
+
+        for (RequestItemEntity requestItemEntity : requestItemEntityList) {
+            requestBarcodes.add(requestItemEntity.getItemEntity().getBarcode());
+            requestStatusResponse.setItemBarcode(requestItemEntity.getItemEntity().getBarcode());
+            requestStatusResponse.setRequestId(requestItemEntity.getId().toString());
+            requestStatusResponse.setItemOwningInstitution(requestItemEntity.getItemEntity().getInstitutionEntity().getInstitutionCode());
+            requestStatusResponse.setRequestingInstitution(requestItemEntity.getInstitutionEntity().getInstitutionCode());
+            requestStatusResponse.setRequestType(requestItemEntity.getRequestTypeEntity().getRequestTypeCode());
+            requestStatusResponse.setSuccess(Boolean.TRUE);
+        }
+
+        Set<String> requestBarcodeSet = new HashSet<>(requestBarcodes);
+        List<String> requestUnavailableBarcodes = availableBarcodeSet.stream()
+                .filter(element -> !requestBarcodeSet.contains(element))
+                .collect(Collectors.toList());
+
+        for (String requestUnavailableBarcode : requestUnavailableBarcodes) {
+            requestStatusResponse.setItemBarcode(requestUnavailableBarcode);
+            requestStatusResponse.setSuccess(Boolean.FALSE);
+            requestStatusResponse.setErrorMessage(ScsbConstants.REQUEST_DOESNOT_EXIST);
+            requestStatusResponses.add(requestStatusResponse);
+        }
+
+        return requestStatusResponses;
+    }
+
+
 }
