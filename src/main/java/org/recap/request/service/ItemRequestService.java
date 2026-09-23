@@ -1413,6 +1413,7 @@ public class ItemRequestService {
      * @return the item status by barcode and is deleted false list
      */
     public List<RequestStatusResponse> getItemRequestStatusByBarcode(List<String> barcodeList) {
+        log.info("getItemRequestStatusByBarcode >>>>>>>>> ");
         List<String> barcodes = new ArrayList<>();
         List<String> availableBarcodes = new ArrayList<>();
         List<String> requestBarcodes = new ArrayList<>();
@@ -1439,8 +1440,9 @@ public class ItemRequestService {
             requestStatusResponses.add(requestStatusResponse);
         }
             List<RequestItemEntity> requestItemEntityList =  requestItemDetailsRepository.findRequestStatusByItemBarcodes(availableBarcodes);
-
+            log.info("requestItemEntityList size >>>>>" + requestItemEntityList.size());
         for (RequestItemEntity requestItemEntity : requestItemEntityList) {
+            log.info("requestItemEntity barcode >>>>>" + requestItemEntity.getItemEntity().getBarcode());
             requestBarcodes.add(requestItemEntity.getItemEntity().getBarcode());
             requestStatusResponse.setItemBarcode(requestItemEntity.getItemEntity().getBarcode());
             requestStatusResponse.setRequestId(requestItemEntity.getId().toString());

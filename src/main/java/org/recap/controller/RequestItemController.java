@@ -24,6 +24,7 @@ import org.recap.model.request.ItemRequestInformation;
 import org.recap.model.request.ReplaceRequest;
 import org.recap.request.service.ItemRequestService;
 import org.recap.service.RestHeaderService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.recap.util.PropertyUtil;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -410,6 +412,7 @@ public class RequestItemController {
     @PostMapping(value = "/requestStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity requestStatus(@RequestBody RequestStatusRequest requestStatusRequest) {
+        log.info("Inside requestStatus >>>>>>> ");
         List<RequestStatusResponse> requestStatusResponses = new ArrayList<>();
         ResponseEntity responseEntity;
         try {
@@ -419,8 +422,14 @@ public class RequestItemController {
             log.error(org.recap.common.ScsbConstants.EXCEPTION, exception);
             return responseEntity;
         }
-        responseEntity = new ResponseEntity(requestStatusResponses, getRestHeaderService().getHttpHeaders(), HttpStatus.OK);
+        responseEntity = new ResponseEntity(requestStatusResponses, getHttpHeaders(), HttpStatus.OK);
         return responseEntity;
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add(ScsbCommonConstants.RESPONSE_DATE, new Date().toString());
+        return responseHeaders;
     }
 
 }
