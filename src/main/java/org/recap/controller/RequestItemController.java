@@ -418,7 +418,7 @@ public class RequestItemController {
         try {
             requestStatusResponses = getItemRequestService().getItemRequestStatusByBarcode(requestStatusRequest.getBarcodes());
         } catch (Exception exception) {
-            responseEntity = new ResponseEntity(org.recap.common.ScsbConstants.SCSB_PERSISTENCE_SERVICE_IS_UNAVAILABLE, getRestHeaderService().getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            responseEntity = new ResponseEntity(org.recap.common.ScsbConstants.SCSB_PERSISTENCE_SERVICE_IS_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
             log.error(org.recap.common.ScsbConstants.EXCEPTION, exception);
             return responseEntity;
         }

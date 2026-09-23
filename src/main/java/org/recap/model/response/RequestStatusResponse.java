@@ -9,7 +9,7 @@ import java.util.Optional;
 
 
 @Data
-public class RequestStatusResponse extends AbstractResponseItem {
+public class RequestStatusResponse  {
     private List<String> itemBarcodes;
     private String titleIdentifier;
     private String itemOwningInstitution = "";
@@ -23,38 +23,12 @@ public class RequestStatusResponse extends AbstractResponseItem {
     }
     private String requestNotes = "";
     private String trackingId;
-    private String author;
-    private String callNumber;
     private String errorMessage;
     private String requestId;
+    private String itemBarcode;
+    private String screenMessage;
+    private boolean success;
 
-
-    /**
-     * EDD Request
-     */
-    private String startPage;
-    private String endPage;
-    private String chapterTitle = "";
-    private String bibId;
-    private String username;
-    private String issue;
-    private String volume;
-
-    /**
-     * Is owning institution item boolean.
-     *
-     * @return the boolean
-     */
-    @JsonIgnore
-    public boolean isOwningInstitutionItem() {
-        boolean bSuccess;
-        if (itemOwningInstitution.equalsIgnoreCase(requestingInstitution)) {
-            bSuccess = true;
-        } else {
-            bSuccess = false;
-        }
-        return bSuccess;
-    }
 
     @Override
     public String toString() {
@@ -69,15 +43,6 @@ public class RequestStatusResponse extends AbstractResponseItem {
                 ", deliveryLocation='" + deliveryLocation + '\'' +
                 ", requestNotes='" + requestNotes + '\'' +
                 ", trackingId='" + trackingId + '\'' +
-                ", author='" + author + '\'' +
-                ", callNumber='" + callNumber + '\'' +
-                ", startPage='" + startPage + '\'' +
-                ", endPage='" + endPage + '\'' +
-                ", chapterTitle='" + chapterTitle + '\'' +
-                ", bibId='" + bibId + '\'' +
-                ", username='" + username + '\'' +
-                ", issue='" + issue + '\'' +
-                ", volume='" + volume + '\'' +
                 '}';
     }
 }
