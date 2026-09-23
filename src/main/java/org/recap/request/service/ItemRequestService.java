@@ -1418,13 +1418,12 @@ public class ItemRequestService {
         List<String> duplicatebarcodes = new ArrayList<>();
         List<String> availableBarcodes = new ArrayList<>();
         List<String> requestBarcodes = new ArrayList<>();
-
+        List<RequestStatusResponse> requestStatusResponses = new ArrayList<>();
         RequestStatusResponse requestStatusResponse = new RequestStatusResponse();
 
         for (String barcode : barcodeList) {
             barcodes.add(barcode.trim());
         }
-        List<RequestStatusResponse> requestStatusResponses = new ArrayList<>();
         List<ItemEntity> itemEntityList = itemDetailsRepository.findByBarcodeInAndComplete(barcodes, Boolean.FALSE);
         for (ItemEntity itemEntity : itemEntityList) {
             availableBarcodes.add(itemEntity.getBarcode());
@@ -1468,7 +1467,7 @@ public class ItemRequestService {
             requestStatusResponse.setErrorMessage(ScsbConstants.REQUEST_DOESNOT_EXIST);
             requestStatusResponses.add(requestStatusResponse);
         }
-
+        log.info("requestStatusResponses size >>>>>" + requestStatusResponses.size());
         return requestStatusResponses;
     }
 
