@@ -1453,6 +1453,7 @@ public class ItemRequestService {
                 requestStatusResponse.setRequestingInstitution(requestItemEntity.getInstitutionEntity().getInstitutionCode());
                 requestStatusResponse.setRequestType(requestItemEntity.getRequestTypeEntity().getRequestTypeCode());
                 requestStatusResponse.setSuccess(Boolean.TRUE);
+                requestStatusResponses.add(requestStatusResponse);
             }
         }
 
@@ -1468,6 +1469,11 @@ public class ItemRequestService {
             requestStatusResponses.add(requestStatusResponse);
         }
         log.info("requestStatusResponses size >>>>>" + requestStatusResponses.size());
+        if(requestStatusResponses.isEmpty()) {
+            requestStatusResponse.setSuccess(Boolean.FALSE);
+            requestStatusResponse.setItemBarcodes(barcodes);
+            requestStatusResponse.setErrorMessage(ScsbConstants.REQUEST_DOESNOT_EXIST);
+        }
         return requestStatusResponses;
     }
 
