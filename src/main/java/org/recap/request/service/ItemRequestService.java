@@ -1415,6 +1415,7 @@ public class ItemRequestService {
     public List<RequestStatusResponse> getItemRequestStatusByBarcode(List<String> barcodeList) {
         log.info("getItemRequestStatusByBarcode >>>>>>>>> ");
         List<String> barcodes = new ArrayList<>();
+        List<String> duplicatebarcodes = new ArrayList<>();
         List<String> availableBarcodes = new ArrayList<>();
         List<String> requestBarcodes = new ArrayList<>();
 
@@ -1443,13 +1444,17 @@ public class ItemRequestService {
             log.info("requestItemEntityList size >>>>>" + requestItemEntityList.size());
         for (RequestItemEntity requestItemEntity : requestItemEntityList) {
             log.info("requestItemEntity barcode >>>>>" + requestItemEntity.getItemEntity().getBarcode());
+            log.info("requestItemEntity created Date >>>>>" + requestItemEntity.getCreatedDate());
             requestBarcodes.add(requestItemEntity.getItemEntity().getBarcode());
-            requestStatusResponse.setItemBarcode(requestItemEntity.getItemEntity().getBarcode());
-            requestStatusResponse.setRequestId(requestItemEntity.getId().toString());
-            requestStatusResponse.setItemOwningInstitution(requestItemEntity.getItemEntity().getInstitutionEntity().getInstitutionCode());
-            requestStatusResponse.setRequestingInstitution(requestItemEntity.getInstitutionEntity().getInstitutionCode());
-            requestStatusResponse.setRequestType(requestItemEntity.getRequestTypeEntity().getRequestTypeCode());
-            requestStatusResponse.setSuccess(Boolean.TRUE);
+            if(!duplicatebarcodes.contains(requestItemEntity.getItemEntity().getBarcode())) {
+                duplicatebarcodes.add(requestItemEntity.getItemEntity().getBarcode());
+                requestStatusResponse.setItemBarcode(requestItemEntity.getItemEntity().getBarcode());
+                requestStatusResponse.setRequestId(requestItemEntity.getId().toString());
+                requestStatusResponse.setItemOwningInstitution(requestItemEntity.getItemEntity().getInstitutionEntity().getInstitutionCode());
+                requestStatusResponse.setRequestingInstitution(requestItemEntity.getInstitutionEntity().getInstitutionCode());
+                requestStatusResponse.setRequestType(requestItemEntity.getRequestTypeEntity().getRequestTypeCode());
+                requestStatusResponse.setSuccess(Boolean.TRUE);
+            }
         }
 
         Set<String> requestBarcodeSet = new HashSet<>(requestBarcodes);
