@@ -1443,10 +1443,10 @@ public class ItemRequestService {
             List<RequestItemEntity> requestItemEntityList =  requestItemDetailsRepository.findRequestStatusByItemBarcodes(availableBarcodes);
             log.info("requestItemEntityList size >>>>>" + requestItemEntityList.size());
         for (RequestItemEntity requestItemEntity : requestItemEntityList) {
-            log.info("requestItemEntity barcode >>>>>" + requestItemEntity.getItemEntity().getBarcode());
-            log.info("requestItemEntity created Date >>>>>" + requestItemEntity.getCreatedDate());
             requestBarcodes.add(requestItemEntity.getItemEntity().getBarcode());
             if(!duplicatebarcodes.contains(requestItemEntity.getItemEntity().getBarcode())) {
+                log.info("requestItemEntity barcode >>>>>" + requestItemEntity.getItemEntity().getBarcode());
+                log.info("requestItemEntity created Date >>>>>" + requestItemEntity.getCreatedDate());
                 duplicatebarcodes.add(requestItemEntity.getItemEntity().getBarcode());
                 requestStatusResponse.setItemBarcode(requestItemEntity.getItemEntity().getBarcode());
                 requestStatusResponse.setRequestId(requestItemEntity.getId().toString());
