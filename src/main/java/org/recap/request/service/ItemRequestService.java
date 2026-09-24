@@ -1436,7 +1436,7 @@ public class ItemRequestService {
         for (String unavalilableBarcode : unavalilableBarcodes) {
             requestStatusResponse = new RequestStatusResponse();
             requestStatusResponse.setItemBarcode(unavalilableBarcode);
-            requestStatusResponse.setSuccess(Boolean.FALSE);
+            requestStatusResponse.setStatus("ERROR");
             requestStatusResponse.setErrorMessage(ScsbConstants.ITEM_BARCDE_DOESNOT_EXIST);
             requestStatusResponses.add(requestStatusResponse);
         }
@@ -1448,11 +1448,11 @@ public class ItemRequestService {
                 duplicatebarcodes.add(requestItemEntity.getItemEntity().getBarcode());
                 requestStatusResponse.setItemBarcode(requestItemEntity.getItemEntity().getBarcode());
                 requestStatusResponse.setRequestId(requestItemEntity.getId().toString());
-                requestStatusResponse.setItemOwningInstitution(requestItemEntity.getItemEntity().getInstitutionEntity().getInstitutionCode());
+                requestStatusResponse.setOwningInstitution(requestItemEntity.getItemEntity().getInstitutionEntity().getInstitutionCode());
                 requestStatusResponse.setRequestingInstitution(requestItemEntity.getInstitutionEntity().getInstitutionCode());
                 requestStatusResponse.setRequestType(requestItemEntity.getRequestTypeEntity().getRequestTypeCode());
                 requestStatusResponse.setDeliveryLocation(requestItemEntity.getStopCode());
-                requestStatusResponse.setSuccess(Boolean.TRUE);
+                requestStatusResponse.setStatus("SUCCESS");
                 requestStatusResponses.add(requestStatusResponse);
             }
         }
@@ -1465,14 +1465,9 @@ public class ItemRequestService {
         for (String requestUnavailableBarcode : requestUnavailableBarcodes) {
             requestStatusResponse = new RequestStatusResponse();
             requestStatusResponse.setItemBarcode(requestUnavailableBarcode);
-            requestStatusResponse.setSuccess(Boolean.FALSE);
+            requestStatusResponse.setStatus("ERROR");
             requestStatusResponse.setErrorMessage(ScsbConstants.REQUEST_DOESNOT_EXIST);
             requestStatusResponses.add(requestStatusResponse);
-        }
-        if(requestStatusResponses.isEmpty()) {
-            requestStatusResponse.setSuccess(Boolean.FALSE);
-            requestStatusResponse.setItemBarcodes(barcodes);
-            requestStatusResponse.setErrorMessage(ScsbConstants.REQUEST_DOESNOT_EXIST);
         }
         return requestStatusResponses;
     }
