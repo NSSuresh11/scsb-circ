@@ -1454,6 +1454,8 @@ public class ItemRequestService {
                 requestStatusResponse.setItemOwningInstitution(requestItemEntity.getItemEntity().getInstitutionEntity().getInstitutionCode());
                 requestStatusResponse.setRequestingInstitution(requestItemEntity.getInstitutionEntity().getInstitutionCode());
                 requestStatusResponse.setRequestType(requestItemEntity.getRequestTypeEntity().getRequestTypeCode());
+                requestStatusResponse.setDeliveryLocation(requestItemEntity.getStopCode());
+                requestStatusResponse.setRequestNotes(requestItemEntity.getNotes());
                 requestStatusResponse.setSuccess(Boolean.TRUE);
                 requestStatusResponses.add(requestStatusResponse);
             }
