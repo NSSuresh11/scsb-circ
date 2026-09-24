@@ -1,12 +1,9 @@
 package org.recap.model.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.recap.model.AbstractResponseItem;
 
 import java.util.List;
 import java.util.Optional;
-
 
 @Data
 public class RequestStatusResponse  {
