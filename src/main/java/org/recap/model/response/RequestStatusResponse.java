@@ -15,7 +15,6 @@ public class RequestStatusResponse  {
     public String getDeliveryLocation() {
         return Optional.ofNullable(deliveryLocation).orElse("");
     }
-    private String requestNotes = "";
     private String errorMessage;
     private String requestId;
     private String itemBarcode;
@@ -31,7 +30,6 @@ public class RequestStatusResponse  {
                 ", requestingInstitution='" + requestingInstitution + '\'' +
                 ", requestType='" + requestType + '\'' +
                 ", deliveryLocation='" + deliveryLocation + '\'' +
-                ", requestNotes='" + requestNotes + '\'' +
                 '}';
     }
 }
