@@ -1434,6 +1434,7 @@ public class ItemRequestService {
                 .filter(element -> !availableBarcodeSet.contains(element))
                 .collect(Collectors.toList());
         for (String unavalilableBarcode : unavalilableBarcodes) {
+            requestStatusResponse = new RequestStatusResponse();
             requestStatusResponse.setItemBarcode(unavalilableBarcode);
             requestStatusResponse.setSuccess(Boolean.FALSE);
             requestStatusResponse.setErrorMessage(ScsbConstants.ITEM_BARCDE_DOESNOT_EXIST);
@@ -1442,6 +1443,7 @@ public class ItemRequestService {
             List<RequestItemEntity> requestItemEntityList =  requestItemDetailsRepository.findRequestStatusByItemBarcodes(availableBarcodes);
             log.info("requestItemEntityList size >>>>>" + requestItemEntityList.size());
         for (RequestItemEntity requestItemEntity : requestItemEntityList) {
+            requestStatusResponse = new RequestStatusResponse();
             requestBarcodes.add(requestItemEntity.getItemEntity().getBarcode());
             if(!duplicatebarcodes.contains(requestItemEntity.getItemEntity().getBarcode())) {
                 log.info("requestItemEntity barcode >>>>>" + requestItemEntity.getItemEntity().getBarcode());
@@ -1463,6 +1465,8 @@ public class ItemRequestService {
                 .collect(Collectors.toList());
 
         for (String requestUnavailableBarcode : requestUnavailableBarcodes) {
+            log.info("requestUnavailableBarcode >>>>>>>> " + requestUnavailableBarcode);
+            requestStatusResponse = new RequestStatusResponse();
             requestStatusResponse.setItemBarcode(requestUnavailableBarcode);
             requestStatusResponse.setSuccess(Boolean.FALSE);
             requestStatusResponse.setErrorMessage(ScsbConstants.REQUEST_DOESNOT_EXIST);
