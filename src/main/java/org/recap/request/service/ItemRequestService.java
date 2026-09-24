@@ -1452,7 +1452,12 @@ public class ItemRequestService {
                 requestStatusResponse.setRequestingInstitution(requestItemEntity.getInstitutionEntity().getInstitutionCode());
                 requestStatusResponse.setRequestType(requestItemEntity.getRequestTypeEntity().getRequestTypeCode());
                 requestStatusResponse.setDeliveryLocation(requestItemEntity.getStopCode());
-                requestStatusResponse.setStatus("SUCCESS");
+                requestStatusResponse.setStatus(requestItemEntity.getRequestStatusEntity().getRequestStatusDescription());
+                if(requestItemEntity.getRequestStatusEntity().getRequestStatusCode().equalsIgnoreCase(ScsbConstants.REQUEST_STATUS_EXCEPTION) ||
+                        requestItemEntity.getRequestStatusEntity().getRequestStatusCode().equalsIgnoreCase(ScsbConstants.REQUEST_STATUS_PENDING) ||
+                        requestItemEntity.getRequestStatusEntity().getRequestStatusCode().equalsIgnoreCase(ScsbConstants.REQUEST_STATUS_LAS_ITEM_STATUS_PENDING)) {
+                    requestStatusResponse.setErrorMessage(requestItemEntity.getNotes());
+                }
                 requestStatusResponses.add(requestStatusResponse);
             }
         }
